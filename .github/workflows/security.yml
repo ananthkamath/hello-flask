@@ -2,7 +2,7 @@ name: Endor Labs Security Pipeline For Pull Requests
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   security-pipeline:
@@ -83,21 +83,43 @@ jobs:
           scan_tools: false
           scan_summary_output_type: table
 
-      # - name: Build Container Image
-        
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # - name: Endor Labs SCA Security
-      #   uses: endorlabs/github-action@main
-      #   with:
-      #     namespace: "matt-demo"
-      #     api: "https://api.endorlabs.com"
-      #     pr: true
-      #     enable_github_action_token: true
-      #     scan_dependencies: false
-      #     scan_secrets: false
-      #     scan_git_logs: false
-      #     enable_pr_comments: false
-      #     scan_github_actions: false
-      #     scan_tools: false
-      #     scan_container: true
-      #     scan_summary_output_type: table
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/hello-flask:latest
+
+      - name: Endor Labs Container Scanning
+        uses: endorlabs/github-action@main
+        with:
+          namespace: ${{ secrets.NAMESPACE }}
+          api: "https://api.endorlabs.com"
+          image: ${{ secrets.DOCKERHUB_USERNAME }}/hello-flask:latest
+          pr: true
+          enable_github_action_token: true
+          scan_dependencies: false
+          scan_secrets: false
+          scan_git_logs: false
+          enable_pr_comments: false
+          scan_github_actions: false
+          scan_tools: false
+          scan_container: true
+          scan_summary_output_type: table
+
+      - name: Get Image Digest to Sign
+        run: |
+          IMAGE_SHA=$(docker inspect registry.hub.docker.com/${{ secrets.DOCKERHUB_USERNAME }}/hello-flask:latest | jq -r '.[].Id')
+          SIGNING_TARGET="registry.hub.docker.com/${{ secrets.DOCKERHUB_USERNAME }}/hello-flask@$IMAGE_SHA"
+          echo ARTIFACT="$SIGNING_TARGET" >> $GITHUB_ENV
+
+      - name: Sign with Endor Labs
+        uses: endorlabs/github-action/sign@main
+        with:
+          namespace: ${{ secrets.NAMESPACE }}
+          artifact_name: ${{ env.ARTIFACT }}
