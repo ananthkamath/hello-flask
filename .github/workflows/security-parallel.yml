@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 jobs:
-  security-pipeline:
+  code-security-pipeline:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -14,49 +14,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Endor Labs Github Actions Security
-        uses: endorlabs/github-action@main
-        with:
-          namespace: ${{ secrets.NAMESPACE }}
-          api: "https://api.endorlabs.com"
-          pr: true
-          enable_github_action_token: true
-          scan_dependencies: false
-          scan_secrets: false
-          scan_git_logs: false
-          enable_pr_comments: false
-          scan_github_actions: true
-          scan_summary_output_type: table
-          
       - name: Endor Labs Secrets Scanning 
         uses: endorlabs/github-action@main
         with:
           namespace: ${{ secrets.NAMESPACE }}
           api: "https://api.endorlabs.com"
           pr: true
+          enable_pr_comments: true
           enable_github_action_token: true
           scan_dependencies: false
           scan_secrets: true
           scan_git_logs: true
-          enable_pr_comments: true
-          scan_github_actions: false
           scan_summary_output_type: table
 
-      - name: Endor Labs Tools Approval
-        uses: endorlabs/github-action@main
-        with:
-          namespace: ${{ secrets.NAMESPACE }}
-          api: "https://api.endorlabs.com"
-          pr: true
-          enable_github_action_token: true
-          scan_dependencies: false
-          scan_secrets: false
-          scan_git_logs: false
-          enable_pr_comments: false
-          scan_github_actions: false
-          scan_tools: true
-          scan_summary_output_type: table
-        
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
@@ -83,6 +53,48 @@ jobs:
           scan_tools: false
           scan_summary_output_type: table
 
+  ci-cd-security-pipeline:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Endor Labs Tools Approval
+        uses: endorlabs/github-action@main
+        with:
+          namespace: ${{ secrets.NAMESPACE }}
+          api: "https://api.endorlabs.com"
+          pr: true
+          enable_github_action_token: true
+          scan_dependencies: false
+          enable_pr_comments: true
+          scan_tools: true
+          scan_summary_output_type: table
+
+      - name: Endor Labs Github Actions Security
+        uses: endorlabs/github-action@main
+        with:
+          namespace: ${{ secrets.NAMESPACE }}
+          api: "https://api.endorlabs.com"
+          pr: true
+          enable_pr_comments: true
+          enable_github_action_token: true
+          scan_dependencies: false
+          scan_github_actions: true
+          scan_summary_output_type: table
+
+  artifact-security-pipeline:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -102,13 +114,8 @@ jobs:
           api: "https://api.endorlabs.com"
           image: ${{ secrets.DOCKERHUB_USERNAME }}/hello-flask:latest
           pr: true
-          enable_github_action_token: true
-          scan_dependencies: false
-          scan_secrets: false
-          scan_git_logs: false
           enable_pr_comments: false
-          scan_github_actions: false
-          scan_tools: false
+          enable_github_action_token: true
           scan_container: true
           scan_summary_output_type: table
 
