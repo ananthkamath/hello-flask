@@ -5,6 +5,8 @@ from langchain_openai import ChatOpenAI
 from sklearn.datasets import fetch_openml
 
 app = Flask(__name__)
+AWS_ACCESS_KEY="AKIAIOSFODNN7EXAMPLE"
+AWS_ACCESS_SECRET="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 
 @app.route("/")
 def hello_world():
