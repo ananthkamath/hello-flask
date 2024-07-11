@@ -8,8 +8,8 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Install langchain
-RUN pip install langchain==0.0.333
-RUN pip install beautifulsoup4==4.12.3
+# RUN pip install langchain==0.0.333
+# RUN pip install beautifulsoup4==4.12.3
 
 # Install any dependencies
 RUN pip install -r requirements.txt
