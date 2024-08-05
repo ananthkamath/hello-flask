@@ -105,14 +105,14 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/hello-flask:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/hello-flask:${{ steps.version.outputs.version }}
 
       - name: Endor Labs Container Scanning
         uses: endorlabs/github-action@main
         with:
           namespace: ${{ secrets.NAMESPACE }}
           api: "https://api.endorlabs.com"
-          image: ${{ secrets.DOCKERHUB_USERNAME }}/hello-flask:latest
+          image: ${{ secrets.DOCKERHUB_USERNAME }}/hello-flask:${{ steps.version.outputs.version }}
           pr: true
           enable_pr_comments: false
           enable_github_action_token: true
@@ -121,7 +121,7 @@ jobs:
 
       - name: Get Image Digest to Sign
         run: |
-          IMAGE_SHA=$(docker inspect registry.hub.docker.com/${{ secrets.DOCKERHUB_USERNAME }}/hello-flask:latest | jq -r '.[].Id')
+          IMAGE_SHA=$(docker inspect registry.hub.docker.com/${{ secrets.DOCKERHUB_USERNAME }}/hello-flask:${{ steps.version.outputs.version }} | jq -r '.[].Id')
           SIGNING_TARGET="registry.hub.docker.com/${{ secrets.DOCKERHUB_USERNAME }}/hello-flask@$IMAGE_SHA"
           echo ARTIFACT="$SIGNING_TARGET" >> $GITHUB_ENV
 
