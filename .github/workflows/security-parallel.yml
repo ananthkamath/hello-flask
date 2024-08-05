@@ -95,38 +95,63 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Generate Version
+        id: version
+        run: |
+          VERSION=$(date +%Y%m%d)-$(git rev-parse --short HEAD)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "::set-output name=version::$VERSION"
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ananthkamath
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/hello-flask:${{ steps.version.outputs.version }}
+          tags: ananthkamath/hello-flask:${{ steps.version.outputs.version }}
 
       - name: Endor Labs Container Scanning
         uses: endorlabs/github-action@main
         with:
           namespace: ${{ secrets.NAMESPACE }}
           api: "https://api.endorlabs.com"
-          image: ${{ secrets.DOCKERHUB_USERNAME }}/hello-flask:${{ steps.version.outputs.version }}
+          image: ananthkamath/hello-flask:${{ steps.version.outputs.version }}
           pr: true
           enable_pr_comments: false
-          enable_github_action_token: true
+          enable_github_action_token: false
           scan_container: true
           scan_summary_output_type: table
 
       - name: Get Image Digest to Sign
         run: |
-          IMAGE_SHA=$(docker inspect registry.hub.docker.com/${{ secrets.DOCKERHUB_USERNAME }}/hello-flask:${{ steps.version.outputs.version }} | jq -r '.[].Id')
-          SIGNING_TARGET="registry.hub.docker.com/${{ secrets.DOCKERHUB_USERNAME }}/hello-flask@$IMAGE_SHA"
-          echo ARTIFACT="$SIGNING_TARGET" >> $GITHUB_ENV
+          IMAGE_SHA=$(docker inspect ananthkamath/hello-flask:${{ steps.version.outputs.version }} | jq -r '.[].RepoDigests[0]')
+          echo ARTIFACT="$IMAGE_SHA" >> $GITHUB_ENV
 
       - name: Sign with Endor Labs
-        uses: endorlabs/github-action/sign@main
+        uses: endorlabs/github-action/sign@802fa65ba7c140405ee52d1c806cfdb647f8f743
         with:
           namespace: ${{ secrets.NAMESPACE }}
           artifact_name: ${{ env.ARTIFACT }}
+
+      - name: Get Docker Image Digest from Docker Registry API
+        id: get-digest
+        run: |
+          IMAGE_NAME="ananthkamath/flask-app"
+          TAG="latest"
+            
+          TOKEN=$(curl -s "https://auth.docker.io/token?service=registry.docker.io&scope=repository:$IMAGE_NAME:pull" | jq -r .token)
+          DIGEST=$(curl -s -H "Accept: application/vnd.docker.distribution.manifest.v2+json" -H "Authorization: Bearer $TOKEN" "https://registry-1.docker.io/v2/$IMAGE_NAME/manifests/$TAG" | jq -r '.config.digest')
+            
+          echo "DIGEST=$DIGEST" >> $GITHUB_ENV
+          echo "IMAGE_NAME_WITH_DIGEST=$IMAGE_NAME@$DIGEST" >> $GITHUB_ENV
+
+      - name: Validate Docker Image
+        uses: endorlabs/github-action/verify@aa5139fcbfa6faa120afc511f0678f81485e83bc
+        with:
+          namespace: ${{ secrets.NAMESPACE }}
+          artifact_name: ${{ env.IMAGE_NAME_WITH_DIGEST }}
+          certificate_oidc_issuer: "https://token.actions.githubusercontent.com"
