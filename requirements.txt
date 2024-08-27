@@ -1,5 +1,3 @@
 flask==3.0.3
 requests==2.31.0
-scikit-learn
-beautifulsoup4==4.12.3
-langchain==0.0.333
+beautifulsoup4==4.9.0
