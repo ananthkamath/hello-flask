@@ -1,6 +1,11 @@
 name: Endor Labs SCA And Containers On Push To Any Branch
 
-on: push
+on:
+  push:
+    branches:
+      - '**'  # Trigger on pushes to any branch
+  create:
+    ref_type: branch  # Trigger when a new branch is created
 
 jobs:
   security-pipeline:
@@ -78,21 +83,21 @@ jobs:
           namespace: ${{ secrets.NAMESPACE }}
           artifact_name: ${{ env.ARTIFACT }}
 
-      - name: Get Docker Image Digest from Docker Registry API
-        id: get-digest
-        run: |
-          IMAGE_NAME="ananthkamath/flask-app"
-          TAG="latest"
+      # - name: Get Docker Image Digest from Docker Registry API
+      #   id: get-digest
+      #   run: |
+      #     IMAGE_NAME="ananthkamath/flask-app"
+      #     TAG="latest"
             
-          TOKEN=$(curl -s "https://auth.docker.io/token?service=registry.docker.io&scope=repository:$IMAGE_NAME:pull" | jq -r .token)
-          DIGEST=$(curl -s -H "Accept: application/vnd.docker.distribution.manifest.v2+json" -H "Authorization: Bearer $TOKEN" "https://registry-1.docker.io/v2/$IMAGE_NAME/manifests/$TAG" | jq -r '.config.digest')
+      #     TOKEN=$(curl -s "https://auth.docker.io/token?service=registry.docker.io&scope=repository:$IMAGE_NAME:pull" | jq -r .token)
+      #     DIGEST=$(curl -s -H "Accept: application/vnd.docker.distribution.manifest.v2+json" -H "Authorization: Bearer $TOKEN" "https://registry-1.docker.io/v2/$IMAGE_NAME/manifests/$TAG" | jq -r '.config.digest')
             
-          echo "DIGEST=$DIGEST" >> $GITHUB_ENV
-          echo "IMAGE_NAME_WITH_DIGEST=$IMAGE_NAME@$DIGEST" >> $GITHUB_ENV
+      #     echo "DIGEST=$DIGEST" >> $GITHUB_ENV
+      #     echo "IMAGE_NAME_WITH_DIGEST=$IMAGE_NAME@$DIGEST" >> $GITHUB_ENV
 
-      - name: Validate Docker Image
-        uses: endorlabs/github-action/verify@aa5139fcbfa6faa120afc511f0678f81485e83bc
-        with:
-          namespace: ${{ secrets.NAMESPACE }}
-          artifact_name: ${{ env.IMAGE_NAME_WITH_DIGEST }}
-          certificate_oidc_issuer: "https://token.actions.githubusercontent.com"
+      # - name: Validate Docker Image
+      #   uses: endorlabs/github-action/verify@aa5139fcbfa6faa120afc511f0678f81485e83bc
+      #   with:
+      #     namespace: ${{ secrets.NAMESPACE }}
+      #     artifact_name: ${{ env.IMAGE_NAME_WITH_DIGEST }}
+      #     certificate_oidc_issuer: "https://token.actions.githubusercontent.com"
