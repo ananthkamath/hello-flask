@@ -1,8 +1,8 @@
 name: Endor Labs Security Pipeline For Pull Requests
 
 on:
-  pull_request:
-    branches: [ master ]
+  push:
+    branches: [ test-scan ]
 
 jobs:
   security-pipeline:
@@ -65,6 +65,7 @@ jobs:
           scan_dependencies: true
           github_token: ${{ secrets.GH_PR_TOKEN }}
           scan_summary_output_type: table
+          export_scan_result_artifact: true
 
       - name: Endor Labs Github Actions Security
         uses: endorlabs/github-action@main
