@@ -2,3 +2,7 @@ flask==3.0.3
 requests==2.31.0
 numpy==2.0.0
 pillow==10.0.0
+beautifulsoup4==4.11.1
+pandas==2.2.3
+django==4.2.27
+setuptools>=78.1.1
