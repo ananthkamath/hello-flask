@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import requests
 
 app = Flask(__name__)
+AWS_ACCESS_KEY="AKIAIOSFODNN7EXAMPLE"
+AWS_ACCESS_SECRET="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 
 @app.route("/")
 def hello_world():
