@@ -9,3 +9,31 @@ ignore:
     extra_key: GHSA-232r-66cg-79px
     reason: risk-accepted
     comments: This finding is not reachable, hence can be ignored
+  - id: endorignore-2
+    username: ananthkamath
+    update_time: 2026-11-04 07:41:32 UTC
+    finding_name: 'GHSA-8q59-q68h-6hv4: Improper Input Validation in PyYAML'
+    dependency_name: pypi://pyyaml@5.3.1
+    vuln_id: GHSA-8q59-q68h-6hv4
+    extra_key: GHSA-8q59-q68h-6hv4
+    reason: risk-accepted
+  - id: endorignore-3
+    username: ananthkamath
+    update_time: 2026-11-04 07:41:33 UTC
+    finding_name: 'GHSA-f2j6-wrhh-v25m: Paramiko Authentication Bypass vulnerability'
+    dependency_name: pypi://paramiko@2.4.0
+    vuln_id: GHSA-f2j6-wrhh-v25m
+    extra_key: GHSA-f2j6-wrhh-v25m
+    reason: risk-accepted
+  - id: endorignore-4
+    username: ananthkamath
+    update_time: 2026-11-04 07:41:33 UTC
+    finding_name: 'Invalid GitHub Personal Access Token: ID #9bb4c3'
+    extra_key: '64bef6dfe9b3b867a9af1865GitHub Personal Access Token: ID #9bb4c3'
+    reason: risk-accepted
+  - id: endorignore-5
+    username: ananthkamath
+    update_time: 2026-11-04 07:41:33 UTC
+    finding_name: 'Invalid Slack Bot Token: ID #b1814a'
+    extra_key: '64bef6dfe9b3b867a9af1865Slack Bot Token: ID #b1814a'
+    reason: risk-accepted
