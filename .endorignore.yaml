@@ -1,0 +1,11 @@
+version: 1.0.0
+ignore:
+  - id: endorignore-1
+    username: ananthkamath
+    update_time: 2026-11-04 07:36:11 UTC
+    finding_name: 'GHSA-232r-66cg-79px: Paramiko not properly checking authentication before processing other requests'
+    dependency_name: pypi://paramiko@2.4.0
+    vuln_id: GHSA-232r-66cg-79px
+    extra_key: GHSA-232r-66cg-79px
+    reason: risk-accepted
+    comments: This finding is not reachable, hence can be ignored
