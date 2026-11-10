@@ -18,3 +18,13 @@ ignore:
     extra_key: GHSA-8q59-q68h-6hv4
     reason: risk-accepted
     comments: Ignoring this because its a false positive
+  - id: endorignore-pr8-1
+    username: ananthkamath
+    update_time: 2026-11-10 09:54:18 UTC
+    finding_name: 'GHSA-f2j6-wrhh-v25m: Paramiko Authentication Bypass vulnerability'
+    parent_name: pypi://hello-flask
+    dependency_name: pypi://paramiko@2.4.0
+    vuln_id: GHSA-f2j6-wrhh-v25m
+    extra_key: GHSA-f2j6-wrhh-v25m
+    reason: risk-accepted
+    comments: Ignoring this because its a false positive
