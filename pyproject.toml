@@ -7,9 +7,12 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
-flask = "3.0.3"
-requests = "2.31.0"
+python = "^3.10"
+flask = "3.0.1"
+requests = "2.29.0"
+markitdown = { version = "0.1.1", extras = ["docx"] }
+# markitdown 0.1.1 leaves mammoth unpinned; pin a vulnerable version (< 1.11.0) for CVE-2025-11849 repro
+mammoth = "1.10.0"
 
 
 [build-system]
